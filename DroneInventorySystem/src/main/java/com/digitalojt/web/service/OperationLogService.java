@@ -25,7 +25,29 @@ public class OperationLogService {
 
 	/** 操作履歴テーブル リポジトリー */
 	private final OperationLogRepository repository;
+	
+	/**
+	 * 操作履歴情報を全件検索で取得
+	 * 
+     * @param page ページ番号
+     * @param size 取得件数
+     * @return 操作履歴テーブルから取得した値をデータ加工したデータ
+	 */
+    public List<OperationLog> getPagedOperationLog(int page, int size) {
+        List<OperationLog> allLogs = repository.findAllByOrderByCreateDateDesc();
 
+        // ページング処理
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, allLogs.size());
+
+        if (fromIndex > allLogs.size()) {
+            return List.of();
+        }
+        
+        List<OperationLog> convertedList = convertOperationLogList(allLogs);
+        return convertedList.subList(fromIndex, toIndex);
+    }
+    
 	/**
 	 * 操作履歴情報を全件検索で取得
 	 * 
